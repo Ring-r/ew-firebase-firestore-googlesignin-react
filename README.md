@@ -247,7 +247,24 @@ service cloud.firestore {
 
 You can replace `'your-collection-name'` with the actual name of the Firestore collection you want to access.
 
-4. Click **Publish** to save the rules.
+4. (Optional) This rule ensures only users from whitelist can access Firestore, reducing the risk of unauthorized access.
+
+You can store a list of whitelisted user IDs (or emails) in a Firestore collection. For example, create a collection called whitelist where each document represents a whitelisted user.
+
+```plaintext
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /yourCollection/{document=**} {
+      // Allow access only if the user's email is in the whitelist
+      allow read, write: if request.auth != null &&
+                        exists(/databases/$(database)/documents/whitelist/$(request.auth.token.email));
+    }
+  }
+}
+```
+
+5. Click **Publish** to save the rules.
 
 ### Step 4: Modify Firebase Configuration
 
